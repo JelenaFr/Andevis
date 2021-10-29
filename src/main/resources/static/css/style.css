@@ -1,0 +1,28 @@
+body {background-color: powderblue;}
+h1   {color: blue;}
+p    {color: green;}
+
+
+[list]::-webkit-calendar-picker-indicator {
+  display: none;
+  opacity: 0;
+  background-color: inherit;
+  -ms-overflow-style: none;
+}
+
+html, body, datalist, option, form-group, custom-select {
+  -ms-overflow-style: none;
+}
+
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+.no-scroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;}
+
+option{ }

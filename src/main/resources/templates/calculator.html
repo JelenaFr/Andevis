@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="ISO-8859-1">
+  <title>Registration Success</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+          crossorigin="anonymous"></script>
+
+</head>
+<body>
+<div class="container text-center">
+  <h3>General overview</h3>
+  <div class="jumbotron">
+    <form th:action="@{/logout}" method="post">
+      <p>
+        Welcome <b>[[${#request.userPrincipal.principal.fullName}]]</b>
+      </p>
+      <input type="submit" class="btn calculate-btn btn-primary" value="Sign Out" />
+    </form>
+  </div>
+  <div class="jumbotron">
+    <div class="container">
+      <h2>Currency Calculator</h2>
+      <p class="lead">Convert the currency</p>
+      <form class="form-row inline container text-center">
+
+        <fieldset id="selectSet">
+        <div class="form-group">
+          <input type="number" class="form-control" min="0.000" step="0.001" id="amount"/>
+        </div>
+
+        <div class="form-group">
+          <input list="fromSelect" id="fromInput" class="custom-select chosen-select" autocomplete="off" onfocus="this.value=''" onchange="this.blur()"/>
+          <datalist id="fromSelect"></datalist>
+        </div>
+
+
+        <div class="form-group">
+          <input list="toSelect" id="toInput" class="custom-select" name="toInput"  autocomplete="off" onfocus="this.value=''" onchange="this.blur();"/>
+          <datalist id="toSelect" ></datalist>
+        </div>
+
+        <div class="form-group">
+          <div id="btn-calc"  class="btn calculate-btn btn-primary">Show me the result!</div>
+        </div>
+        </fieldset>
+<!--        <div class="form-group mx-sm-3 mb-2">-->
+
+<!--          <fieldset id="selectSet" data-s="1">-->
+
+<!--            &lt;!&ndash;          <datalist id="fromSelect"></datalist>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <label for="toInput">Choose stop:</label>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <input list="stopSelect" id="toInput" name="toInput" autocomplete="off" onfocus="this.value=''"&ndash;&gt;-->
+<!--            &lt;!&ndash;                 onchange="this.blur();" class="chosen-select">&ndash;&gt;-->
+<!--            &lt;!&ndash;          <datalist id="stopSelect"></datalist>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <button id="btn-send" type="button" class="btn btn-primary">Confirm</button>&ndash;&gt;-->
+<!--            &lt;!&ndash;          <button id="btn-reset" type="submit" onClick="history.go(0)" class="btn btn-primary">Again</button>&ndash;&gt;-->
+<!--            <br>-->
+<!--          </fieldset>-->
+
+
+<!--        </div>-->
+
+      </form>
+    </div>
+  </div>
+      <div class="result">
+        <p>
+          <span class="given-amount"></span>
+          <span class="base-currency"></span>
+          <span class="final-result"></span>
+          <span class="second-currency"></span>
+        </p>
+
+    </div>
+
+
+
+</div>
+
+<script>
+
+  const fromInput = document.getElementById("fromInput");
+  const toInput = document.getElementById("toInput");
+  const fromSelect = document.getElementById("fromSelect");
+  const toSelect = document.getElementById("toSelect");
+  const sendQueryButton = document.getElementById("btn-calc");
+  const amount = document.getElementById("amount");
+
+  getAllCurrencyCodes();
+  getCalculation ();
+
+
+  function getAllCurrencyCodes() {
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/calculator/allCodes',
+      data: JSON
+    }).done(function (response) {
+
+      console.log(response);
+      response.forEach(op => fromSelect.innerHTML += `<option value="${op}">${op}</option>`);
+      response.forEach(op => toSelect.innerHTML += `<option value="${op}">${op}</option>`);
+    })
+  }
+
+
+  function getCalculation () {
+    sendQueryButton.addEventListener("click", () =>{
+      const amount = amount.value;
+      const fromCurrency = fromInput.value;
+      const toCurrency = toInput.value;
+
+      $.ajax({
+        type: 'GET',
+        url: 'http://localhost:8080/calculator/'+ amount + '/'  + fromCurrency + '/' + toCurrency ,
+        data: JSON
+      }).done(function (response){
+        console.log(response);
+      })
+
+    })
+  }
+</script>
+
+</body>
+</html>
