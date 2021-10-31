@@ -14,8 +14,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table
-@ToString(of = {"id", "base", "date"})
-@EqualsAndHashCode(of = {"id"})
+//@ToString(of = {"id", "base", "date"})
+//@EqualsAndHashCode(of = {"id"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrencyRate {
 

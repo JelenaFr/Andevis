@@ -7,14 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.firewall.DefaultHttpFirewall;
-import org.springframework.security.web.firewall.HttpFirewall;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import javax.sql.DataSource;
 
@@ -59,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .antMatcher("/**")
             .authorizeRequests()
-            .antMatchers("/", "/login**", "/css/**", "/js/**", "/welcome**", "error**", "/registration**").permitAll()
+            .antMatchers("/", "/login*", "/css/**", "/js/**", "/welcome**", "error**", "/registration**").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -69,23 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .logout().logoutSuccessUrl("/").permitAll()
             .and()
-//            .rememberMe().tokenRepository(persi)
-//            .and()
             .csrf().disable();
-
     }
-
-
-//    @Override
-//    public void configure(WebSecurity web) {
-//        // Новый брандмауэр вынужден перезаписать исходный
-//        web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
-//    }
-//
-//    @Bean
-//    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
-//        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
-//        firewall.setAllowUrlEncodedSlash(true);
-//        return firewall;
-//    }
 }
+

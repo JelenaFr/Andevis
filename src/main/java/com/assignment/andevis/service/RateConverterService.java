@@ -1,6 +1,5 @@
 package com.assignment.andevis.service;
 
-import com.assignment.andevis.config.LoadDatabase;
 import com.assignment.andevis.dto.JsonCurrencyResponse;
 import com.assignment.andevis.model.Currency;
 import com.assignment.andevis.model.CurrencyRate;
@@ -18,14 +17,13 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class CalculatorService {
+public class RateConverterService {
     @Autowired
     CurrencyRateRepository currencyRateRepository;
     @Autowired
@@ -42,10 +40,10 @@ public class CalculatorService {
 
     }
 
-    public Double convertCurrency(Double amount, String fromCurrency, String toCurrency, Principal principal)  {
+    public Double convertCurrency(Double amount, String fromCurrency, String toCurrency, Principal principal) {
 
         DecimalFormat df = new DecimalFormat("#.###");
-        Double covertSum = (Double.valueOf(df.format(amount * currencyRateRepository.getactualRate(fromCurrency, toCurrency))));
+        Double covertSum = (Double.valueOf(df.format(amount * currencyRateRepository.getActualRate(fromCurrency, toCurrency))));
 
         if (amount != null && fromCurrency != null && toCurrency != null) {
 
@@ -64,18 +62,15 @@ public class CalculatorService {
     }
 
 
-
-    public void updateDatabase () throws JsonProcessingException {
-        System.out.println(currencyRateRepository.findCurrentDay().toLocalDateTime());
-        System.out.println(LocalDateTime.now());
-        boolean isAfter = LocalDateTime.now().isAfter(currencyRateRepository.findCurrentDay().toLocalDateTime());
-        System.out.println(isAfter);
-
-        foo(currencyRateRepository);
-
+    public void checkDatabaseActuality() throws JsonProcessingException {
+        boolean isAfter = LocalDateTime.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime());
+        if (isAfter) {
+            updateDatabase(currencyRateRepository);
         }
 
-    public static void foo(CurrencyRateRepository currencyRateRepository) throws JsonProcessingException {
+    }
+
+    public static void updateDatabase(CurrencyRateRepository currencyRateRepository) throws JsonProcessingException {
         String rawJson = new RestTemplate().getForObject("http://api.exchangeratesapi.io/v1/latest?access_key=666c7f1b11f090a2f5e8e466bdcdd78e", String.class);
         ObjectMapper mapper = new ObjectMapper();
         JsonCurrencyResponse jsonResponse = mapper.readValue(rawJson, JsonCurrencyResponse.class);
@@ -85,7 +80,6 @@ public class CalculatorService {
             currencyRateRepository.save(new CurrencyRate(new Currency(entries.getKey(), entries.getValue()), jsonResponse.getBase(), jsonResponse.getDate()));
         }
     }
-
 
 }
 

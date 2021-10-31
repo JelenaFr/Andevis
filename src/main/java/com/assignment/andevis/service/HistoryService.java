@@ -20,7 +20,7 @@ public class HistoryService {
     public List<History> findUserHistory(Principal principal) {
         String currentPrincipalName = principal.getName();
         User user = userRepository.findUserByEmail(currentPrincipalName);
-        System.out.println(historyRepository.findHistoryByUserId(user.getId()));
+
         return historyRepository.findHistoryByUserId(user.getId());
     }
 

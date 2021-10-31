@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,13 +35,9 @@ public class User {
     private LocalDateTime registrationTime;
 
 
-
-
-
-
     public User(String password, String email, String firstName, String lastName) {
         this.username = firstName.substring(0, 1).toUpperCase() + firstName.substring(1)
-            + " " +lastName.substring(0, 1).toUpperCase()+ lastName.substring(1);
+            + " " + lastName.substring(0, 1).toUpperCase() + lastName.substring(1);
         this.password = password;
         this.email = email;
         this.firstName = firstName;

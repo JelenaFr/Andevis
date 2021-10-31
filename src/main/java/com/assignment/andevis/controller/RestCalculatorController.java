@@ -1,7 +1,7 @@
 package com.assignment.andevis.controller;
 
 import com.assignment.andevis.model.History;
-import com.assignment.andevis.service.CalculatorService;
+import com.assignment.andevis.service.RateConverterService;
 import com.assignment.andevis.service.HistoryService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 class RestCalculatorController {
     @Autowired
-    CalculatorService calculatorService;
+    RateConverterService rateConverterService;
 
     @Autowired
     private HistoryService historyService;
@@ -33,7 +33,7 @@ class RestCalculatorController {
     @GetMapping("/calculator/allCodes")
     public ResponseEntity<List<String>> list() {
 
-        return ResponseEntity.ok(calculatorService.findAllCodes());
+        return ResponseEntity.ok(rateConverterService.findAllCodes());
     }
 
 
@@ -41,8 +41,8 @@ class RestCalculatorController {
     public ResponseEntity<Double> convertCurrency(@PathVariable("amount") Double amount,
                                                   @PathVariable("fromCurrency") String fromCurrency,
                                                   @PathVariable("toCurrency") String toCurrency, Principal principal) throws JsonProcessingException {
-        calculatorService.updateDatabase();
-        return ResponseEntity.ok(calculatorService.convertCurrency(amount, fromCurrency, toCurrency, principal));
+        rateConverterService.checkDatabaseActuality();
+        return ResponseEntity.ok(rateConverterService.convertCurrency(amount, fromCurrency, toCurrency, principal));
     }
 
     @GetMapping("/calculator/history")

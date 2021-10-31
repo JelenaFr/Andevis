@@ -2,7 +2,6 @@ package com.assignment.andevis.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +25,8 @@ public class History {
     String currencyTo;
     Double amount;
     Double result;
-    @Column(name="user_id")
+    @Column(name = "user_id")
     Long userId;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime operationTime;
 }
