@@ -1,5 +1,6 @@
 package com.assignment.andevis.config;
 
+import com.assignment.andevis.repository.UserRepository;
 import com.assignment.andevis.service.AppUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private DataSource dataSource;
+
 
     @Autowired
     public void setDataSource(DataSource dataSource) {

@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,8 @@ public class RateConverterService {
     public Double convertCurrency(Double amount, String fromCurrency, String toCurrency, Principal principal) {
 
         DecimalFormat df = new DecimalFormat("#.###");
-        Double covertSum = (Double.valueOf(df.format(amount * currencyRateRepository.getActualRate(fromCurrency, toCurrency))));
+        double result = amount * currencyRateRepository.getRate(fromCurrency, toCurrency);
+        Double covertSum = (Double.valueOf(df.format(result)));
 
         if (amount != null && fromCurrency != null && toCurrency != null) {
 
@@ -63,7 +65,7 @@ public class RateConverterService {
 
 
     public void checkDatabaseActuality() throws JsonProcessingException {
-        boolean isAfter = LocalDateTime.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime());
+        boolean isAfter = LocalDate.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime().toLocalDate());
         if (isAfter) {
             updateDatabase(currencyRateRepository);
         }

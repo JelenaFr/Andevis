@@ -21,5 +21,5 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRate, Long
 
 
     @Query(value = "SELECT  rate/(SELECT rate FROM currency_rate WHERE code LIKE :fromCurrency ORDER BY date DESC LIMIT 1)  FROM currency_rate WHERE code LIKE :toCurrency ORDER BY date DESC LIMIT 1 ;", nativeQuery = true)
-    Double getActualRate(String fromCurrency, String toCurrency);
+    Double getRate(String fromCurrency, String toCurrency);
 }

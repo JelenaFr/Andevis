@@ -32,13 +32,12 @@ create table users (
                        primary key (id)
 );
 
-CREATE UNIQUE INDEX date_code_rate_id_index ON currency_rate (date, code, rate, id);
+CREATE UNIQUE INDEX date_code_rate_id_index ON currency_rate (date, base, code);
 
-alter table if exists users drop constraint if exists UK_6dotkott2kjsp8vw4d0m25fb7;
 
-alter table if exists users add constraint UK_6dotkott2kjsp8vw4d0m25fb7 unique (email);
 
-alter table if exists history add constraint FKq4kh99ws9lhtls5i3o73gw30t foreign key (user_id) references users;
+alter table if exists users add constraint UK_username_email unique (email);
+
 
 insert
 into
