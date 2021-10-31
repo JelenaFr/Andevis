@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
@@ -24,80 +27,117 @@
       <p>
         Welcome <b>[[${#request.userPrincipal.principal.fullName}]]</b>
       </p>
-      <input type="submit" class="btn calculate-btn btn-primary" value="Sign Out" />
+      <input type="submit" class="btn calculate-btn btn-primary" value="Logout"/>
     </form>
   </div>
   <div class="jumbotron">
-    <div class="container">
+    <div class="container text-center">
+
       <h2>Currency Calculator</h2>
       <p class="lead">Convert the currency</p>
-      <form class="form-row inline container text-center">
+      <div class="form-center">
+        <form id="form" name="form" class="form-row inline text-center ">
 
-        <fieldset id="selectSet">
-        <div class="form-group">
-          <input type="number" class="form-control" min="0.000" step="0.001" id="amount"/>
-        </div>
-
-        <div class="form-group">
-          <input list="fromSelect" id="fromInput" class="custom-select chosen-select" autocomplete="off" onfocus="this.value=''" onchange="this.blur()"/>
-          <datalist id="fromSelect"></datalist>
-        </div>
-
-
-        <div class="form-group">
-          <input list="toSelect" id="toInput" class="custom-select" name="toInput"  autocomplete="off" onfocus="this.value=''" onchange="this.blur();"/>
-          <datalist id="toSelect" ></datalist>
-        </div>
-
-        <div class="form-group">
-          <div id="btn-calc"  class="btn calculate-btn btn-primary">Show me the result!</div>
-        </div>
-        </fieldset>
-<!--        <div class="form-group mx-sm-3 mb-2">-->
-
-<!--          <fieldset id="selectSet" data-s="1">-->
-
-<!--            &lt;!&ndash;          <datalist id="fromSelect"></datalist>&ndash;&gt;-->
-<!--            &lt;!&ndash;          <label for="toInput">Choose stop:</label>&ndash;&gt;-->
-<!--            &lt;!&ndash;          <input list="stopSelect" id="toInput" name="toInput" autocomplete="off" onfocus="this.value=''"&ndash;&gt;-->
-<!--            &lt;!&ndash;                 onchange="this.blur();" class="chosen-select">&ndash;&gt;-->
-<!--            &lt;!&ndash;          <datalist id="stopSelect"></datalist>&ndash;&gt;-->
-<!--            &lt;!&ndash;          <button id="btn-send" type="button" class="btn btn-primary">Confirm</button>&ndash;&gt;-->
-<!--            &lt;!&ndash;          <button id="btn-reset" type="submit" onClick="history.go(0)" class="btn btn-primary">Again</button>&ndash;&gt;-->
-<!--            <br>-->
-<!--          </fieldset>-->
-
-
-<!--        </div>-->
-
-      </form>
+          <fieldset id="selectSet">
+            <div class="form-group ">
+              <input id="amount" required type="number" name="amount" class="form-control" min="0.000" step="0.001"/>
+            </div>
+            <div class="form-group">
+              <select id="fromSelect" required type="text" name="fromCur" class="form-control custom-select chosen-select" onfocus="this.value='' ">
+                <option></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select id="toSelect" required type="text" name="toCur" class="form-control custom-select chosen-select" onfocus="this.value='' ">
+                <option></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div id="btn-calc" class="btn calculate-btn btn-primary">Convert!</div>
+            </div>
+            <div id="output" class="form-group">
+            </div>
+          </fieldset>
+        </form>
+      </div>
     </div>
   </div>
-      <div class="result">
-        <p>
-          <span class="given-amount"></span>
-          <span class="base-currency"></span>
-          <span class="final-result"></span>
-          <span class="second-currency"></span>
-        </p>
-
+  <div class="jumbotron">
+    <div class="container text-center">
+      <div class="form-group">
+        <input id="btn-history" type="button" onclick="change()" class="btn calculate-btn btn-primary" value="Get my history"></input>
+      </div>
+      <div id="history" class="form-group">
+      </div>
     </div>
-
-
-
+  </div>
 </div>
+
 
 <script>
 
-  const fromInput = document.getElementById("fromInput");
-  const toInput = document.getElementById("toInput");
+
   const fromSelect = document.getElementById("fromSelect");
   const toSelect = document.getElementById("toSelect");
   const sendQueryButton = document.getElementById("btn-calc");
-  const amount = document.getElementById("amount");
+  const getHistoryButton = document.getElementById("btn-history");
+  const output = document.getElementById("output");
 
   getAllCurrencyCodes();
-  getCalculation ();
+  getCalculation();
+
+
+  function change() {
+    document.getElementById("btn-history").value = "Update my history";
+  }
+
+  function createTable() {
+    let str = `<table id="historyTable" class="table table-striped">`;
+    str = str + `<thead>`;
+    str = str + `<tr>`;
+    str = str + `<th scope="col">Amount</th>`;
+    str = str + `<th scope="col">Source currency</th>`;
+    str = str + `<th scope="col">Value</th>`;
+    str = str + `<th scope="col">Target currency</th>`;
+    str = str + `<th scope="col">Date and time</th>`;
+    str = str + `<th scope="col">Delete entry</th>`;
+    str = str + `</tr>`;
+    str = str + `</thead>`;
+    str = str + `<tbody id="context">`;
+    str = str + `</tbody>`;
+    str = str + `</table>`;
+    document.getElementById("history").innerHTML = str;
+  }
+
+  getHistoryButton.addEventListener("click", () => {
+    getUserHistory()
+  })
+
+
+  function getUserHistory() {
+
+    $("#context").innerHTML = "";
+    createTable();
+
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/calculator/history',
+      data: JSON
+    }).done(function (response) {
+
+
+      response.forEach(item => context.innerHTML +=
+        `<tr>
+            <td scope="row">${item["amount"]}</td>
+            <td scope="row">${item["currencyFrom"]}</td>
+            <td scope="row">${item["result"]}</td>
+            <td scope="row">${item["currencyTo"]}</td>
+            <td scope="row">${item["operationTime"]}</td>
+            <td><button class="btn btn-primary" input type="button" value="Delete" onclick="deleteEntry('http://localhost:8080/calculator/delete/' + ${item["id"]}, this )" ><i class="fa fa-trash"></i></button></td>
+        </tr>`);
+    })
+
+  }
 
 
   function getAllCurrencyCodes() {
@@ -107,29 +147,66 @@
       data: JSON
     }).done(function (response) {
 
-      console.log(response);
-      response.forEach(op => fromSelect.innerHTML += `<option value="${op}">${op}</option>`);
-      response.forEach(op => toSelect.innerHTML += `<option value="${op}">${op}</option>`);
+      response.forEach(item => fromSelect.innerHTML += `<option value="${item}">${item}</option>`);
+      response.forEach(item => toSelect.innerHTML += `<option value="${item}">${item}</option>`);
     })
   }
 
 
-  function getCalculation () {
-    sendQueryButton.addEventListener("click", () =>{
-      const amount = amount.value;
-      const fromCurrency = fromInput.value;
-      const toCurrency = toInput.value;
+  function getCalculation() {
+    sendQueryButton.addEventListener("click", () => {
+      let amount = $("#amount").val();
+      let fromInput = $("#fromSelect").val();
+      let toInput = $("#toSelect").val();
 
-      $.ajax({
-        type: 'GET',
-        url: 'http://localhost:8080/calculator/'+ amount + '/'  + fromCurrency + '/' + toCurrency ,
-        data: JSON
-      }).done(function (response){
-        console.log(response);
-      })
+      if (amount === "" || fromInput === "" || toInput === "") {
+        window.alert("Please fill out all fields");
+        return;
+      } else {
 
+
+        $.ajax({
+          type: 'GET',
+          url: 'http://localhost:8080/calculator/' + amount + '/' + fromInput + '/' + toInput,
+          data: JSON
+        }).done(function (response) {
+          $('#form')[0].reset();
+          output.innerHTML = "";
+          output.innerHTML +=
+            `
+                                <span>${amount}</span>
+                                <span>${fromInput}</span>
+                                <span> = </span>
+                                <span>${response}</span>
+                                <span>${toInput}</span>
+                            `;
+
+          amount.innerHTML = "";
+          fromInput.innerHTML = "";
+          toInput.innerHTML = "";
+
+        })
+
+      }
     })
   }
+
+
+  $("#amount").blur(function () {
+    this.value = parseFloat(this.value).toFixed(3);
+  });
+
+
+  function deleteEntry(url, element) {
+    $.ajax({
+      url: url,
+      type: "DELETE",
+      success: function (response) {
+        $(element).closest('tr').hide();
+      }
+    });
+  }
+
 </script>
 
 </body>

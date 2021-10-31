@@ -1,22 +1,27 @@
 package com.assignment.andevis.controller;
 
-import com.assignment.andevis.model.User;
-import com.assignment.andevis.repository.UserRepository;
+import com.assignment.andevis.model.History;
 import com.assignment.andevis.service.CalculatorService;
+import com.assignment.andevis.service.HistoryService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 class RestCalculatorController {
     @Autowired
     CalculatorService calculatorService;
+
     @Autowired
-    private UserRepository userRepository;
+    private HistoryService historyService;
 
     @GetMapping("/calculator")
     public ModelAndView calculatorPage() {
@@ -32,49 +37,21 @@ class RestCalculatorController {
     }
 
 
-    @GetMapping("/calculator/result/{amount}/{fromCurrency}/{toCurrency}")
-    public ResponseEntity<Double> convertCurrency (@PathVariable("amount") Double amount,
-                                                 @PathVariable("fromCurrency") String fromCurrency,
-                                                 @PathVariable("toCurrency") String toCurrency) {
-        return ResponseEntity.ok(calculatorService.convertCurrency( amount, fromCurrency, toCurrency) );
+    @GetMapping("/calculator/{amount}/{fromCurrency}/{toCurrency}")
+    public ResponseEntity<Double> convertCurrency(@PathVariable("amount") Double amount,
+                                                  @PathVariable("fromCurrency") String fromCurrency,
+                                                  @PathVariable("toCurrency") String toCurrency, Principal principal) throws JsonProcessingException {
+        calculatorService.updateDatabase();
+        return ResponseEntity.ok(calculatorService.convertCurrency(amount, fromCurrency, toCurrency, principal));
     }
 
+    @GetMapping("/calculator/history")
+    public ResponseEntity<List<History>> showUserHistory(Principal principal) {
+        return ResponseEntity.ok(historyService.findUserHistory(principal));
+    }
 
-
-
-
-
-//    @GetMapping("/registration")
-//    public ModelAndView showRegistrationForm() {
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("registration");
-//        return modelAndView;
-//    }
-
-
-
-
-//    @GetMapping("/registration")
-//    public String createRegistration(
-//        @RequestParam("password") String password,
-//        @RequestParam("firstname") String firstname,
-//        @RequestParam("lastname") String lastname,
-//        @RequestParam("email") String email
-//    ) {
-//        User newUser = new User(password, email, firstname, lastname);
-//        userRepository.save(newUser);
-//        return "/signup";
-//    }
-//
-//
-//    @PostMapping("/registration")
-//    public ModelAndView addUser(@Valid @RequestBody User user) {
-//        userRepository.save(user);
-//        ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("signup");
-//        return modelAndView;
-//    }
-//
-
-
+    @DeleteMapping("/calculator/delete/{param}")
+    public void deleteFirstLevel(@PathVariable("param") Long id) {
+        historyService.deleteEntry(id);
+    }
 }

@@ -1,6 +1,6 @@
 package com.assignment.andevis.service;
 
-import com.assignment.andevis.implementation.AppUserDetails;
+import com.assignment.andevis.dto.AppUserDetails;
 import com.assignment.andevis.model.User;
 import com.assignment.andevis.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

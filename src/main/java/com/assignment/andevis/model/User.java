@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +25,7 @@ public class User {
     private Long id;
 
     private String username;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String password;
     @Column(nullable = false, unique = true)
     @Email(message = "Email should be valid")
@@ -33,6 +35,11 @@ public class User {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
     private LocalDateTime registrationTime;
+
+
+
+
+
 
     public User(String password, String email, String firstName, String lastName) {
         this.username = firstName.substring(0, 1).toUpperCase() + firstName.substring(1)

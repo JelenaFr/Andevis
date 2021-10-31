@@ -1,11 +1,10 @@
-package com.assignment.andevis.implementation;
+package com.assignment.andevis.dto;
 
 import com.assignment.andevis.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Locale;
 
 public class AppUserDetails implements UserDetails {
 
@@ -16,11 +15,9 @@ public class AppUserDetails implements UserDetails {
     }
 
     public String getFullName() {
-
-
-        return user.getFirstName().substring(0, 1).toUpperCase() + user.getFirstName().substring(1)
-            + " " + user.getLastName().substring(0, 1).toUpperCase()+ user.getLastName().substring(1);
+        return user.getUsername();
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

@@ -12,6 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.firewall.DefaultHttpFirewall;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import javax.sql.DataSource;
 
@@ -49,18 +52,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
     }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-//        http
-//            .authorizeRequests().anyRequest().permitAll();
-
-
 
         http
             .antMatcher("/**")
             .authorizeRequests()
-            .antMatchers("/", "/login**","/css/**", "/js/**","/welcome**", "error**","/registration**").permitAll()
+            .antMatchers("/", "/login**", "/css/**", "/js/**", "/welcome**", "error**", "/registration**").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -74,6 +73,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //            .and()
             .csrf().disable();
 
-   }
+    }
 
+
+//    @Override
+//    public void configure(WebSecurity web) {
+//        // Новый брандмауэр вынужден перезаписать исходный
+//        web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
+//    }
+//
+//    @Bean
+//    public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
+//        DefaultHttpFirewall firewall = new DefaultHttpFirewall();
+//        firewall.setAllowUrlEncodedSlash(true);
+//        return firewall;
+//    }
 }

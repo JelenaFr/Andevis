@@ -1,4 +1,4 @@
-package com.assignment.andevis.jsonobject;
+package com.assignment.andevis.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
