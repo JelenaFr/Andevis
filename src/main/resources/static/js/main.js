@@ -1,116 +1,123 @@
-//
-// function getIndex(list, id) {
-//   for (var i = 0; i<list.length; i++){
-//     if(list[i].id ===id){
-//       return i;
-//     }
-//   }
-//
-//   return -1;
-// }
-//
-//
-// var currencyRateApi = Vue.resource('/currencyRate{/id}');
-//
-// Vue.component('currencyRate-form', {
-//   props: ['currencyRates', 'currencyRateAttr'],
-//   data: function () {
-//     return {
-//       currencyRate: {currency:{code: '', rate: ''}, base: '', date: ''}
-//     }
-//   },
-//   watch: {
-//     currencyRateAttr: function (newVal, oldVal) {
-//       this.currencyRate = JSON.parse(JSON.stringify(newVal));
-//     }
-//   },
-//   template:
-//     '<div>' +
-//     '<div><input type="code" placeholder="Write code" v-model="currencyRate.currency.code"  /></div>' +
-//     '<div><input type="rate" placeholder="Write rate" v-model="currencyRate.currency.rate"  /></div>' +
-//     '<input type="button" value="Save" @click="save" />' +
-//     '</div>',
-//   methods: {
-//     save: function () {
-//       if (this.currencyRate.id) {
-//         currencyRateApi.update({id: this.currencyRate.id}, this.currencyRate)
-//           .then(result => result.json()
-//             .then(data =>{
-//               var index = getIndex(this.currencyRates, data.id);
-//               this.currencyRates.splice(index, 1, data);
-//             })
-//           );
-//       } else {
-//         currencyRateApi.save({}, this.currencyRate).then(result =>
-//           result.json().then(data => {
-//             this.currencyRates.push(data);
-//           })
-//         );
-//       }
-//       this.currencyRate = {currency:{code: '', rate: ''}, base: '', date: ''};
-//     }
-//   }
-// });
-//
-//
-// Vue.component('currencyRate-row', {
-//   props: ['currencyRate', 'editMethod',"currencyRates" ],
-//   template: '<div>' +
-//     '<i>({{" " + currencyRate.id + " " }})</i>{{" " +  currencyRate.currency.code }}{{" " +  currencyRate.currency.rate }}{{ " " + currencyRate.base }}{{ " " + currencyRate.date }}' +
-//     '<span style="position: absolute; right: 0">' +
-//     '<input type = "button" value="Edit" @click="edit"/>' +
-//     '<input type = "button" value="Delete" @click="del"/>' +
-//     '</span>' +
-//     '</div>',
-//   methods: {
-//     edit: function () {
-//       this.editMethod(this.currencyRate)
-//
-//     },
-//     del: function () {
-//       currencyRateApi.remove({id: this.currencyRate.id}).then(result =>{
-//         if (result.ok){
-//           this.currencyRates.splice(this.currencyRates.indexOf(this.currencyRate), 1)
-//         }
-//       })
-//     }
-//   }
-// });
-//
-//
-// Vue.component('currencyRates-list', {
-//   props: ['currencyRates'],
-//   data: function () {
-//     return {
-//       currencyRate: null
-//     }
-//   },
-//   template: '<div style="position: relative; width: 500px;">' +
-//     '<currencyRate-form :currencyRates="currencyRates" :currencyRateAttr="currencyRate" />' +
-//     '<currencyRate-row v-for="currencyRate in currencyRates" :key= "currencyRate.id" :currencyRate="currencyRate" :editMethod="editMethod" :currencyRates="currencyRates"/>' +
-//     '</div>',
-//
-//   methods: {
-//     editMethod: function (currencyRate) {
-//       this.currencyRate = currencyRate;
-//
-//     }
-//   }
-// });
-//
-//
-//
-// var app = new Vue({
-//   el: '#app',
-//   template: '<currencyRates-list :currencyRates="currencyRates"/>',
-//   data: {
-//     currencyRates: []
-//   },
-//   created: function () {
-//     currencyRateApi.get().then(result =>
-//       result.json().then(data =>
-//         data.forEach(currencyRate => this.currencyRates.push(currencyRate))
-//       )
-//     )
-//   },
-// });
+'use strict'
+
+const fromSelect = document.getElementById("fromSelect");
+const toSelect = document.getElementById("toSelect");
+const sendQueryButton = document.getElementById("btn-calc");
+const getHistoryButton = document.getElementById("btn-history");
+const output = document.getElementById("output");
+
+
+function change() {
+  document.getElementById("btn-history").value = "Update my history";
+}
+
+
+function deleteEntry(url, element) {
+    $.ajax({
+      url: url,
+      type: "DELETE",
+      success: function (response) {
+        $(element).closest('tr').hide();
+      }
+    });
+  }
+
+
+$.when($.ready).then(function () {
+  getAllCurrencyCodes();
+  getCalculation();
+
+  function createTable() {
+    let str = `<table id="historyTable" class="display" style="width:100%">`;
+    str = str + `<thead>`;
+    str = str + `<tr>`;
+    str = str + `<th class="th-sm">Amount</th>`;
+    str = str + `<th class="th-sm">Source currency</th>`;
+    str = str + `<th class="th-sm">Value</th>`;
+    str = str + `<th class="th-sm">Target currency</th>`;
+    str = str + `<th class="th-sm">Date and time</th>`;
+    str = str + `<th class="th-sm">Delete entry</th>`;
+    str = str + `</tr>`;
+    str = str + `</thead>`;
+    str = str + `<tbody id="context">`;
+    str = str + `</tbody>`;
+    str = str + `</table>`;
+    document.getElementById("history").innerHTML = str;
+  }
+
+  getHistoryButton.addEventListener("click", () => {
+    getUserHistory()
+  })
+
+
+  function getUserHistory() {
+    $("#context").innerHTML = "";
+    createTable();
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/calculator/history',
+      data: JSON
+    }).done(function (response) {
+      response.forEach(item => context.innerHTML +=
+        `
+           <tr>
+            <td>${item["amount"]}</td>
+            <td>${item["currencyFrom"]}</td>
+            <td>${item["result"]}</td>
+            <td>${item["currencyTo"]}</td>
+            <td>${item["operationTime"]}</td>
+            <td><button class="btn btn-primary" input type="button" value="Delete" onclick="deleteEntry('http://localhost:8080/calculator/delete/' + ${item["id"]}, this )" ><i class="fa fa-trash"></i></button></td>
+           </tr>
+        `
+      );
+    })
+
+  }
+
+  function getAllCurrencyCodes() {
+    $.ajax({
+      type: 'GET',
+      url: 'http://localhost:8080/calculator/allCodes',
+      data: JSON
+    }).done(function (response) {
+      response.forEach(item => fromSelect.innerHTML += `<option value="${item}">${item}</option>`);
+      response.forEach(item => toSelect.innerHTML += `<option value="${item}">${item}</option>`);
+    })
+  }
+
+
+  function getCalculation() {
+    sendQueryButton.addEventListener("click", () => {
+      let amount = $("#amount").val();
+      let fromInput = $("#fromSelect").val();
+      let toInput = $("#toSelect").val();
+      if (amount === "" || fromInput === "" || toInput === "") {
+        window.alert("Please fill out all fields");
+        return;
+      } else {
+        $.ajax({
+          type: 'GET',
+          url: 'http://localhost:8080/calculator/' + amount + '/' + fromInput + '/' + toInput,
+          data: JSON
+        }).done(function (response) {
+          $('#form')[0].reset();
+          output.innerHTML = "";
+          output.innerHTML +=
+                            `
+                                <span>${amount}</span>
+                                <span>${fromInput}</span>
+                                <span> = </span>
+                                <span>${response}</span>
+                                <span>${toInput}</span>
+                            `;
+        })
+      }
+    })
+  }
+
+
+  $("#amount").blur(function () {
+    this.value = parseFloat(this.value).toFixed(3);
+  });
+
+})

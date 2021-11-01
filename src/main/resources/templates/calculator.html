@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="ISO-8859-1">
-  <title>Registration Success</title>
+  <title>Currency converter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
@@ -32,7 +32,6 @@
   </div>
   <div class="jumbotron">
     <div class="container text-center">
-
       <h2>Currency Calculator</h2>
       <p class="lead">Convert the currency</p>
       <div class="form-center">
@@ -40,15 +39,15 @@
 
           <fieldset id="selectSet">
             <div class="form-group ">
-              <input id="amount" required type="number" name="amount" class="form-control" min="0.000" step="0.001"/>
+              <input id="amount" required  type="number" name="amount" class="form-control" min="0.000" step="0.001"/>
             </div>
             <div class="form-group">
-              <select id="fromSelect" required type="text" name="fromCur" class="form-control custom-select chosen-select" onfocus="this.value='' ">
+              <select id="fromSelect" required  onchange="this.blur()"  class="form-control custom-select"  onfocus="this.value='' ">
                 <option></option>
               </select>
             </div>
             <div class="form-group">
-              <select id="toSelect" required type="text" name="toCur" class="form-control custom-select chosen-select" onfocus="this.value='' ">
+              <select id="toSelect" required  onchange="this.blur()"  class="form-control custom-select"  onfocus="this.value='' ">
                 <option></option>
               </select>
             </div>
@@ -65,7 +64,7 @@
   <div class="jumbotron">
     <div class="container text-center">
       <div class="form-group">
-        <input id="btn-history" type="button" onclick="change()" class="btn calculate-btn btn-primary" value="Get my history"></input>
+        <input id="btn-history" type="button" onclick="change()" class="btn calculate-btn btn-primary" value="Get my history">
       </div>
       <div id="history" class="form-group">
       </div>
@@ -74,140 +73,7 @@
 </div>
 
 
-<script>
-
-
-  const fromSelect = document.getElementById("fromSelect");
-  const toSelect = document.getElementById("toSelect");
-  const sendQueryButton = document.getElementById("btn-calc");
-  const getHistoryButton = document.getElementById("btn-history");
-  const output = document.getElementById("output");
-
-  getAllCurrencyCodes();
-  getCalculation();
-
-
-  function change() {
-    document.getElementById("btn-history").value = "Update my history";
-  }
-
-  function createTable() {
-    let str = `<table id="historyTable" class="table table-striped">`;
-    str = str + `<thead>`;
-    str = str + `<tr>`;
-    str = str + `<th scope="col">Amount</th>`;
-    str = str + `<th scope="col">Source currency</th>`;
-    str = str + `<th scope="col">Value</th>`;
-    str = str + `<th scope="col">Target currency</th>`;
-    str = str + `<th scope="col">Date and time</th>`;
-    str = str + `<th scope="col">Delete entry</th>`;
-    str = str + `</tr>`;
-    str = str + `</thead>`;
-    str = str + `<tbody id="context">`;
-    str = str + `</tbody>`;
-    str = str + `</table>`;
-    document.getElementById("history").innerHTML = str;
-  }
-
-  getHistoryButton.addEventListener("click", () => {
-    getUserHistory()
-  })
-
-
-  function getUserHistory() {
-
-    $("#context").innerHTML = "";
-    createTable();
-
-    $.ajax({
-      type: 'GET',
-      url: 'http://localhost:8080/calculator/history',
-      data: JSON
-    }).done(function (response) {
-
-
-      response.forEach(item => context.innerHTML +=
-        `<tr>
-            <td scope="row">${item["amount"]}</td>
-            <td scope="row">${item["currencyFrom"]}</td>
-            <td scope="row">${item["result"]}</td>
-            <td scope="row">${item["currencyTo"]}</td>
-            <td scope="row">${item["operationTime"]}</td>
-            <td><button class="btn btn-primary" input type="button" value="Delete" onclick="deleteEntry('http://localhost:8080/calculator/delete/' + ${item["id"]}, this )" ><i class="fa fa-trash"></i></button></td>
-        </tr>`);
-    })
-
-  }
-
-
-  function getAllCurrencyCodes() {
-    $.ajax({
-      type: 'GET',
-      url: 'http://localhost:8080/calculator/allCodes',
-      data: JSON
-    }).done(function (response) {
-
-      response.forEach(item => fromSelect.innerHTML += `<option value="${item}">${item}</option>`);
-      response.forEach(item => toSelect.innerHTML += `<option value="${item}">${item}</option>`);
-    })
-  }
-
-
-  function getCalculation() {
-    sendQueryButton.addEventListener("click", () => {
-      let amount = $("#amount").val();
-      let fromInput = $("#fromSelect").val();
-      let toInput = $("#toSelect").val();
-
-      if (amount === "" || fromInput === "" || toInput === "") {
-        window.alert("Please fill out all fields");
-        return;
-      } else {
-
-
-        $.ajax({
-          type: 'GET',
-          url: 'http://localhost:8080/calculator/' + amount + '/' + fromInput + '/' + toInput,
-          data: JSON
-        }).done(function (response) {
-          $('#form')[0].reset();
-          output.innerHTML = "";
-          output.innerHTML +=
-            `
-                                <span>${amount}</span>
-                                <span>${fromInput}</span>
-                                <span> = </span>
-                                <span>${response}</span>
-                                <span>${toInput}</span>
-                            `;
-
-          amount.innerHTML = "";
-          fromInput.innerHTML = "";
-          toInput.innerHTML = "";
-
-        })
-
-      }
-    })
-  }
-
-
-  $("#amount").blur(function () {
-    this.value = parseFloat(this.value).toFixed(3);
-  });
-
-
-  function deleteEntry(url, element) {
-    $.ajax({
-      url: url,
-      type: "DELETE",
-      success: function (response) {
-        $(element).closest('tr').hide();
-      }
-    });
-  }
-
-</script>
+<script src="js/main.js"></script>
 
 </body>
 </html>

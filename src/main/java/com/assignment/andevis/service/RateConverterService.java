@@ -48,9 +48,9 @@ public class RateConverterService {
         Double formattedResult = (Double.valueOf(df.format(result)));
 
         if (amount != null && fromCurrency != null && toCurrency != null) {
-            createHistoryRecord( amount, fromCurrency, toCurrency, principal, formattedResult);
+            createHistoryRecord(amount, fromCurrency, toCurrency, principal, formattedResult);
         }
-       return formattedResult;
+        return formattedResult;
     }
 
     public void createHistoryRecord(Double amount, String fromCurrency, String toCurrency, Principal principal, Double formattedResult) {
@@ -68,8 +68,6 @@ public class RateConverterService {
 
     public void checkDatabaseActuality() throws JsonProcessingException {
         boolean isAfterDay = LocalDate.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime().toLocalDate());
-        System.out.println(LocalTime.now().getHour());
-
         if (isAfterDay && ((Integer) LocalTime.now().getHour()) >= updateTime) {
             updateDatabase(currencyRateRepository);
         }
