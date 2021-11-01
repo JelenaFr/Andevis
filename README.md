@@ -20,10 +20,9 @@ Logout is available by clicking on the "Logout" button.
 
 
 ## Requirements:
-Java 11
-Maven
-Spring boot 2.3.2
-PostgresSQL 14
+#####Java 11
+####Maven
+####PostgresSQL 14
 
 ## To create a database:
 Create database named "calculator", username "postgres" password "kalevlaev"
