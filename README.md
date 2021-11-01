@@ -19,22 +19,22 @@ Removing unnecessary entries is available by clicking on the "Trash" button.
 Logout is available by clicking on the "Logout" button.
 
 
-##Requirements:
-#####Java 11
-####Maven
-####PostgresSQL 14
+## Requirements:
+##### Java 11
+#### Maven
+#### PostgresSQL 14
 
-##To create a database:
+## To create a database:
 Create database named "calculator", username "postgres" password "kalevlaev"
 
-##Commands for building the project:
+## Commands for building the project:
 ###### mvn compile
 ###### mvn package
-####To add the project JAR file to the local repository:
+#### To add the project JAR file to the local repository:
 ###### mvn install
 
-##Run project without using IDE:
+## Run project without using IDE:
 ###### mvn spring-boot: run
 
-##The application is running on localhost
+## The application is running on localhost
 ###### http://localhost:8080/
