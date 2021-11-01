@@ -20,15 +20,11 @@ import java.math.BigDecimal;
 @Embeddable
 public class Currency {
 
-
     private String code;
     private BigDecimal rate;
-
     @PrePersist
     @PreUpdate
     public void codeToUpper() {
         code = code.toUpperCase();
     }
-
-
 }

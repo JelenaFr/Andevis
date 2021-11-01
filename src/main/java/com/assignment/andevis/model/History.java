@@ -20,12 +20,10 @@ public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     String currencyFrom;
     String currencyTo;
     Double amount;
     Double result;
-    @Column(name = "user_id")
     Long userId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime operationTime;

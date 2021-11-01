@@ -8,9 +8,5 @@ public class CurrencyCalculatorApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CurrencyCalculatorApplication.class, args);
-
-
     }
-
-
 }

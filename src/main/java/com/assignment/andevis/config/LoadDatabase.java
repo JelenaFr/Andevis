@@ -8,15 +8,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class LoadDatabase {
-
-
     @Bean
     CommandLineRunner initDatabase(CurrencyRateRepository currencyRateRepository) {
         return args -> {
-
             RateConverterService.updateDatabase(currencyRateRepository);
         };
-
-
     }
 }

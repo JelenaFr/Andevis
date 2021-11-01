@@ -19,6 +19,7 @@ import java.security.Principal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,44 +33,46 @@ public class RateConverterService {
     @Autowired
     UserRepository userRepository;
 
+    private final Integer updateTime = 2;
+
 
     public List<String> findAllCodes() {
         List<String> list = currencyRateRepository.getListCurrencyCode();
         List<String> sortedList = list.stream().sorted().collect(Collectors.toList());
         return sortedList;
-
-
     }
 
     public Double convertCurrency(Double amount, String fromCurrency, String toCurrency, Principal principal) {
-
         DecimalFormat df = new DecimalFormat("#.###");
         double result = amount * currencyRateRepository.getRate(fromCurrency, toCurrency);
-        Double covertSum = (Double.valueOf(df.format(result)));
+        Double formattedResult = (Double.valueOf(df.format(result)));
 
         if (amount != null && fromCurrency != null && toCurrency != null) {
-
-            String currentPrincipalName = principal.getName();
-            User user = userRepository.findUserByEmail(currentPrincipalName);
-            History newHistory = new History();
-            newHistory.setAmount(amount);
-            newHistory.setResult(covertSum);
-            newHistory.setCurrencyFrom(fromCurrency);
-            newHistory.setCurrencyTo(toCurrency);
-            newHistory.setUserId(user.getId());
-            newHistory.setOperationTime(LocalDateTime.now());
-            historyRepository.save(newHistory);
+            createHistoryRecord( amount, fromCurrency, toCurrency, principal, formattedResult);
         }
-        return covertSum;
+       return formattedResult;
     }
 
+    public void createHistoryRecord(Double amount, String fromCurrency, String toCurrency, Principal principal, Double formattedResult) {
+        String currentPrincipalName = principal.getName();
+        User user = userRepository.findUserByEmail(currentPrincipalName);
+        History newHistory = new History();
+        newHistory.setAmount(amount);
+        newHistory.setResult(formattedResult);
+        newHistory.setCurrencyFrom(fromCurrency);
+        newHistory.setCurrencyTo(toCurrency);
+        newHistory.setUserId(user.getId());
+        newHistory.setOperationTime(LocalDateTime.now());
+        historyRepository.save(newHistory);
+    }
 
     public void checkDatabaseActuality() throws JsonProcessingException {
-        boolean isAfter = LocalDate.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime().toLocalDate());
-        if (isAfter) {
+        boolean isAfterDay = LocalDate.now().isAfter(currencyRateRepository.findLastAvailableDay().toLocalDateTime().toLocalDate());
+        System.out.println(LocalTime.now().getHour());
+
+        if (isAfterDay && ((Integer) LocalTime.now().getHour()) >= updateTime) {
             updateDatabase(currencyRateRepository);
         }
-
     }
 
     public static void updateDatabase(CurrencyRateRepository currencyRateRepository) throws JsonProcessingException {

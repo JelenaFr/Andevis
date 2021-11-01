@@ -33,6 +33,4 @@ public class WelcomeController {
         userService.createUser(user);
         return "welcome";
     }
-
-
 }

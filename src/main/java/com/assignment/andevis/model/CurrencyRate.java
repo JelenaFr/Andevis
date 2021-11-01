@@ -3,7 +3,9 @@ package com.assignment.andevis.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,21 +15,16 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table
-//@ToString(of = {"id", "base", "date"})
-//@EqualsAndHashCode(of = {"id"})
+@Table(name = "currency_rate")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CurrencyRate {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Embedded
-
     private Currency currency;
-
     private String base;
-
     @Column(updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;

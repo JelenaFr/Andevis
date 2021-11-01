@@ -36,7 +36,6 @@ class RestCalculatorController {
         return ResponseEntity.ok(rateConverterService.findAllCodes());
     }
 
-
     @GetMapping("/calculator/{amount}/{fromCurrency}/{toCurrency}")
     public ResponseEntity<Double> convertCurrency(@PathVariable("amount") Double amount,
                                                   @PathVariable("fromCurrency") String fromCurrency,
