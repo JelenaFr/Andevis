@@ -50,7 +50,7 @@ class RestCalculatorController {
     }
 
     @DeleteMapping("/calculator/delete/{param}")
-    public void deleteFirstLevel(@PathVariable("param") Long id) {
+    public void removeHistoryRecord(@PathVariable("param") Long id) {
         historyService.deleteEntry(id);
     }
 }
